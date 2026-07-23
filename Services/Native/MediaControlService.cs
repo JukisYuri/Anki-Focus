@@ -1,7 +1,7 @@
 ﻿using Windows.Media.Control;
 using AnkiFocusEnforcer.Core.Interfaces;
 
-namespace AnkiFocusEnforcer.Services
+namespace AnkiFocusEnforcer.Services.Native
 {
     public class MediaControlService : IMediaService
     {

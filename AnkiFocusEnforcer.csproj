@@ -9,8 +9,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Resources\" />
         <Folder Include="UI\Components\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Resources\favicon.ico">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Resources\elaina.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
     </ItemGroup>
 
 </Project>

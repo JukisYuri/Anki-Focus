@@ -1,5 +1,6 @@
 ﻿using AnkiFocusEnforcer.Core.Interfaces;
 using AnkiFocusEnforcer.Services.Native;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 public class MainForm : Form
 {
@@ -9,6 +10,7 @@ public class MainForm : Form
     private Button btnStart;
     private NumericUpDown numMinutes;
     private Label lblMinutes;
+    private NotifyIcon _notifyIcon;
     
     private readonly Color BgColor = Color.FromArgb(248, 249, 250);        
     private readonly Color TextPrimary = Color.FromArgb(33, 37, 41);       
@@ -27,21 +29,38 @@ public class MainForm : Form
         _focusService.OnLockdownActivated += HandleLockdown; 
     }
 
-    private void btnStart_Click(object sender, EventArgs e)
+    private async void btnStart_Click(object sender, EventArgs e)
     {
-        int minutes = (int)numMinutes.Value;
+        int minutes = (int) numMinutes.Value;
+        var windowService = new WindowLockService();
+        if (!windowService.IsAppRunning("anki"))
+        {
+            MessageBox.Show("Không tìm thấy Anki! Hãy mở Anki lên trước rồi mới bấm Bắt đầu nhé.", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+        
+        btnStart.Enabled = false;
+        btnStart.BackColor = Color.FromArgb(209, 213, 219); // Xám khi disable
+        numMinutes.Enabled = false;
+        
+        for (int i = 5; i > 0; i--)
+        {
+            lblTimer.Text = $"Khóa sau {i}s...";
+            await Task.Delay(1000);
+        }
+        
         try
         {
             _focusService.StartSession(minutes);
-            
-            btnStart.Enabled = false;
-            btnStart.BackColor = Color.FromArgb(209, 213, 219); // Xám khi disable
-            numMinutes.Enabled = false;
             lblTimer.Text = "Đang tập trung...";
         }
         catch (Exception ex)
         {
             MessageBox.Show(ex.Message, "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            btnStart.Enabled = true;
+            btnStart.BackColor = AccentBlue;
+            numMinutes.Enabled = true;
+            lblTimer.Text = "Sẵn sàng tập trung";
         }
     }
     
@@ -55,6 +74,15 @@ public class MainForm : Form
             
             int minutes = (int)numMinutes.Value;
             lblTimer.Text = $"Đã khóa! Còn: {minutes * 60:D2}s";
+            
+            string imagePath = Path.GetFullPath(@"Resources\elaina.jpg"); 
+
+            new ToastContentBuilder()
+                .AddText("Mizuki Nhắc Bạn =)") // Tiêu đề
+                .AddText("Đã tạm dừng Media\nKhóa Taskbar & Desktop")
+
+                .AddAppLogoOverride(new Uri(imagePath), ToastGenericAppLogoCrop.Circle)
+                .Show();
         }));
     }
 
@@ -90,6 +118,12 @@ public class MainForm : Form
     {
         Text = "Anki Focus Enforcer";
         Size = new Size(360, 230);
+        
+        _notifyIcon = new NotifyIcon {
+            Icon = new Icon(@"Resources\favicon.ico"),
+            Visible = true,
+            Text = "Anki Focus Enforcer"
+        };
         StartPosition = FormStartPosition.CenterScreen;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
@@ -165,7 +199,9 @@ public class MainForm : Form
         KeyboardBlocker.Unblock();
         TaskbarController.EnableTaskbarInteraction();
         DesktopController.ShowDesktopIcons();
-        
+
+        _notifyIcon.Visible = false;
+        _notifyIcon.Dispose();
         base.OnFormClosing(e);
     }
 }
