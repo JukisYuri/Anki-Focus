@@ -2,6 +2,6 @@
 
 public interface IMediaService
 {
-    // Gửi lệnh giả lập phím Pause để dừng YouTube/Spotify
+    // Gửi lệnh giả lập Pause dừng YouTube/Spotify
     void PauseAllMedia();
 }
