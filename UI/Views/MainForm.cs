@@ -71,6 +71,7 @@ public class MainForm : Form
             KeyboardBlocker.Block();
             TaskbarController.DisableTaskbarInteraction();
             DesktopController.HideDesktopIcons();
+            PowerController.PreventSleep();
             
             int minutes = (int)numMinutes.Value;
             lblTimer.Text = $"Đã khóa! Còn: {minutes * 60:D2}s";
@@ -102,6 +103,7 @@ public class MainForm : Form
             KeyboardBlocker.Unblock();
             TaskbarController.EnableTaskbarInteraction();
             DesktopController.ShowDesktopIcons();
+            PowerController.AllowSleep();
 
             lblTimer.Text = "Hoàn thành phiên học!";
             btnStart.Enabled = true;
