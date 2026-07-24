@@ -1,6 +1,7 @@
 ﻿using AnkiFocusEnforcer.Core.Interfaces;
 using AnkiFocusEnforcer.Services;
 using AnkiFocusEnforcer.Services.Native;
+using AnkiFocusEnforcer.UI.Views;
 
 namespace AnkiFocusEnforcer;
 
@@ -14,8 +15,8 @@ internal static class Program
         IWindowService windowService = new WindowLockService();
         IMediaService mediaService = new MediaControlService();
         IFocusService focusService = new FocusService(windowService, mediaService);
-        
-        MainForm mainForm = new MainForm(focusService);
+        MainForm mainForm = new MainForm(focusService, mediaService); 
+
         Application.Run(mainForm);
     }
 }
