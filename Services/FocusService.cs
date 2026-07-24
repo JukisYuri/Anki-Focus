@@ -8,7 +8,6 @@ public class FocusService : IFocusService
 {
     private readonly IMediaService _mediaService;
     private readonly IWindowService _windowService;
-    
     private readonly System.Timers.Timer _timer;
     private FocusSession _currentSession;
 
@@ -32,7 +31,6 @@ public class FocusService : IFocusService
         _currentSession = new FocusSession(minutes);
         _currentSession.State = SessionState.Running;
         
-        _windowService.LockFocusToApp("anki");
         _mediaService.PauseAllMedia();
         OnLockdownActivated?.Invoke(); 
         
@@ -43,23 +41,14 @@ public class FocusService : IFocusService
     {
         _timer.Stop();
         _currentSession.State = SessionState.Completed;
-        _windowService.ReleaseFocus();
         OnSessionCompleted?.Invoke();
     }
-
-    public FocusSession GetCurrentSession() => _currentSession;
     
     private void OnTimerElapsed(object sender, ElapsedEventArgs e)
     {
         if (_currentSession.State != SessionState.Running) return;
-        if (!_windowService.IsAppInForeground("anki"))
-        {
-            _windowService.LockFocusToApp("anki");
-        }
-        
         _currentSession.RemainingSeconds--;
-        OnTick?.Invoke(_currentSession.RemainingSeconds);
-        
+        OnTick.Invoke(_currentSession.RemainingSeconds);
         if (_currentSession.RemainingSeconds <= 0)
         {
             StopSession(); 

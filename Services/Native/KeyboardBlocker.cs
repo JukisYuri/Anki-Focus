@@ -50,7 +50,6 @@ public static class KeyboardBlocker
             bool isAltEsc = (wParam == WM_SYSKEYDOWN && vkCode == 27);        // Alt + Esc
             bool isAltF4 = (wParam == WM_SYSKEYDOWN && vkCode == 115);
             
-            // 0x11 là mã của nút Ctrl. Check xem Ctrl có đang bị giữ không
             bool isCtrlDown = (GetKeyState(0x11) & 0x8000) != 0; 
             bool isCtrlEsc = (vkCode == 27 && isCtrlDown);                    // Ctrl + Esc (Mở Start Menu)
 
